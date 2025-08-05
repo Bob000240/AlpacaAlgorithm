@@ -11,8 +11,8 @@ import pandas_ta as ta
 
 import alpaca.data.requests as DataRequest
 
-API_KEY = "PK5TV7Y9LXL6WLO8P4IK"
-SECRET_KEY = "SIATJGUh0cjiUj9xUaV5QQm4wt1rablAOotrjO2t"
+API_KEY = ""
+SECRET_KEY = ""
 StackClient = TradingClient(API_KEY, SECRET_KEY, paper=True)
 
 class Orders:
@@ -39,4 +39,5 @@ class Orders:
         order = StackClient.submit_order(order_data)
         return order
         
+
     
