@@ -7,8 +7,8 @@ import pandas as pd
 from Indicators.IndicatorFactory import IndicatorFactory
 
 
-API_KEY = "PK5TV7Y9LXL6WLO8P4IK"
-SECRET_KEY = "SIATJGUh0cjiUj9xUaV5QQm4wt1rablAOotrjO2t"
+API_KEY = ""
+SECRET_KEY = ""
 DataClient = StockHistoricalDataClient(API_KEY, SECRET_KEY)
 
 class Retriever:
@@ -88,4 +88,5 @@ print(spy.getCombineData())
 
 
 with open("data.csv", "w") as f:
+
     f.write(spy.toCSV(spy.getCombineData()))
