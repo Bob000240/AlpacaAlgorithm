@@ -17,15 +17,15 @@ class MACD:
         result = pd.DataFrame()
         result['MACD'] = df[f"MACD_{fast}_{slow}_{signal}"]
         result['MACD_hist'] = df[f"MACDh_{fast}_{slow}_{signal}"]
-        result['MACD_signal'] = df[f"MACDs_{fast}_{slow}_{signal}"]
+        result['MACD_sig'] = df[f"MACDs_{fast}_{slow}_{signal}"]
         return result
     def signalStrat(self):
         df = self.compute()
         macd = df['MACD']
-        macd_signal = df['MACD_signal']
+        macdSignal = df['MACD_sig']
 
         signal = pd.Series("hold", self.dataframe.index, name='MACD_result')
-        signal[macd > macd_signal] = 'buy'
-        signal[macd < macd_signal] = 'sell'
+        signal[(macd > macdSignal) & (macd.shift(1) <= macdSignal.shift(1))] = 'buy'
+        signal[(macd < macdSignal) & (macd.shift(1) >= macdSignal.shift(1))] = 'sell'
         #signal.fillna('hold', inplace=True)
         return signal
