@@ -19,7 +19,7 @@ class MACD:
         result['MACD_hist'] = df[f"MACDh_{fast}_{slow}_{signal}"]
         result['MACD_sig'] = df[f"MACDs_{fast}_{slow}_{signal}"]
         return result
-    def signalStrat(self):
+    def TAStrats(self):
         df = self.compute()
         macd = df['MACD']
         macdSignal = df['MACD_sig']

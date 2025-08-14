@@ -10,16 +10,20 @@ import pandas as pd
 import pandas_ta as ta
 
 import alpaca.data.requests as DataRequest
+from Retriever import Retriever
+from TechnicalAnalysis import TechnicalAnalysis
 
 API_KEY = ""
 SECRET_KEY = ""
-StackClient = TradingClient(API_KEY, SECRET_KEY, paper=True)
+StockClient = TradingClient(API_KEY, SECRET_KEY, paper=True)
 
-class Orders:
-    def __init__(self, stock, orderType, qty):
+class Executor :
+    def __init__(self, stock, qty, strat):
         self.stock = stock
-        self.orderType = orderType
         self.qty = qty
+        self.strat = strat
+        if self.strat == "TA":
+            self.strat = TechnicalAnalysis("NVDA")
     def buy(self):
         order_data = MarketOrderRequest(
             symbol=self.stock,
@@ -27,7 +31,7 @@ class Orders:
             side=OrderSide.BUY,
             time_in_force=TimeInForce.DAY
         )
-        order = StackClient.submit_order(order_data)
+        order = StockClient.submit_order(order_data)
         return order
     def sell(self):
         order_data = MarketOrderRequest(
@@ -36,8 +40,17 @@ class Orders:
             side=OrderSide.SELL,
             time_in_force=TimeInForce.DAY
         )
-        order = StackClient.submit_order(order_data)
+        order = StockClient.submit_order(order_data)
         return order
+    def run(self):
+        if self.strat.testindicatorsOrder() == "buy" or self.strat.testindicatorsOrder() == "SBuy":
+            return self.buy()
+        elif self.strat.testindicatorsOrder() == "sell" or self.strat.testindicatorsOrder() == "SSell":
+            return self.sell()
+        else:
+            print("No action taken based on strategy signals.")
+            return None
+
         
 
     

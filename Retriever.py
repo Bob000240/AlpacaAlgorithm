@@ -7,27 +7,17 @@ import pandas as pd
 from Indicators.IndicatorFactory import IndicatorFactory
 
 
-API_KEY = ""
-SECRET_KEY = ""
+API_KEY = "PKWTJIBVMNMS9I071AP3"
+SECRET_KEY = "yx9PvdxcScs7Kyo7ef5dv7B614QqiP1nmhaTp2Wm"
 DataClient = StockHistoricalDataClient(API_KEY, SECRET_KEY)
 
 class Retriever:
-    """
-    A class to retrieve stock data and apply technical indicators.
-    Attributes:
-        stock (str): The stock symbol to retrieve data for.
-        stockData (pd.DataFrame): DataFrame containing stock data.
-        indicatorData (pd.DataFrame): DataFrame containing computed indicators.
-        combinedData (pd.DataFrame): DataFrame combining stock data and indicators.
-        indicatorFactory (IndicatorFactory): Factory to compute indicators.
-    """
-
     def __init__(self, stock):
         self.stock = stock
         self.stockData = pd.DataFrame()
         hData = DataRequest.StockBarsRequest(
             symbol_or_symbols = self.stock,
-            start = datetime.now() - timedelta(days=3),
+            start = datetime.now() - timedelta(days=1),
             end = datetime.now(),
             #limit = 100,
             # currency: SupportedCurrencies | None = None,
@@ -50,9 +40,7 @@ class Retriever:
             })
         self.stockData = pd.DataFrame(dataList)
         self.stockData = self.stockData.sort_values("datetime")  # oldest to newest
-        self.stockData['datetime'] = pd.to_datetime(self.stockData['datetime'])  # ensure datetime dtype
-        self.stockData['datetime'] = self.stockData['datetime'].dt.tz_convert('America/New_York')
-        self.stockData = self.stockData.set_index('datetime').between_time('09:30', '16:00').reset_index()
+
         self.indicatorData = pd.DataFrame()
         self.signalData = pd.DataFrame()
         self.combinedData = pd.DataFrame()
@@ -64,8 +52,8 @@ class Retriever:
         self.indicatorData = self.indicatorFactory.computeIndicators()
         self.indicatorData = self.indicatorData
         return self.indicatorData
-    def getSignalData(self):
-        self.signalData = self.indicatorFactory.signalStrats()
+    def getTAData(self):
+        self.signalData = self.indicatorFactory.TAStrats()
         return self.signalData
     def getCombineData(self):
         self.combinedData = pd.concat([self.stockData, self.indicatorData, self.signalData], axis=1)
@@ -73,10 +61,13 @@ class Retriever:
         return self.combinedData
     def getStockData(self):
         return self.stockData
+    def getLatestData(self):
+        return self.stockData.tail(1)
     def toCSV(self, dataframe):
         return dataframe.to_csv(index=False)
 
-spy = Retriever("UNH")
+"""
+spy = Retriever("NVO")
 spy.addIndicator("BBands(SMA)")
 spy.addIndicator("BBands(EMA)")
 spy.addIndicator("RSI")
@@ -90,3 +81,4 @@ print(spy.getCombineData())
 with open("data.csv", "w") as f:
 
     f.write(spy.toCSV(spy.getCombineData()))
+"""

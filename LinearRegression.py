@@ -5,10 +5,11 @@ import pandas_ta as ta
 from Retriever import Retriever
 
 class LinearRegression:
-    def __init__(self, dataframe):
-        self.dataframe = dataframe
-        self.X = dataframe.drop(columns=['open', 'high', 'low', 'close', 'volume', 'datetime']).to_numpy()
-        self.Y = dataframe['close'].to_numpy()
+    def __init__(self, stock):
+        data = Retriever(stock)
+        self.dataframe = data
+        self.X = data.drop(columns=['open', 'high', 'low', 'close', 'volume', 'datetime']).to_numpy()
+        self.Y = data['close'].to_numpy()
         self.X = np.column_stack((np.ones((self.X.shape[0])),self.X))  # add intercept
         self.beta_hat = np.linalg.pinv(self.X.T @ self.X) @ self.X.T @ self.Y
     def mostOptimalIndicators(self):

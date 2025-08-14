@@ -17,7 +17,7 @@ class RSI:
         result = pd.DataFrame()
         result['RSI'] = s
         return result
-    def signalStrat(self):
+    def TAStrats(self):
         df = self.compute()
         rsi = df['RSI']
 

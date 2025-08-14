@@ -22,7 +22,7 @@ class BBands:
         result[f'BBANDS_mid_{mamode.upper()}'] = df[f'BBM_{length}_{std:.1f}']
         result[f'BBANDS_upper_{mamode.upper()}'] = df[f'BBU_{length}_{std:.1f}']
         return result
-    def signalStrat(self):
+    def TAStrats(self):
         df = self.compute()
         price = self.dataframe[self.close_col]
 

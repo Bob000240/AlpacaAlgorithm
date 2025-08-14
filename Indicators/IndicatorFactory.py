@@ -31,9 +31,9 @@ class IndicatorFactory:
             results.append(indicator.compute())
         indicatorDataFrame = pd.concat(results, axis=1)
         return indicatorDataFrame
-    def signalStrats(self):
+    def TAStrats(self):
         signals = []
         for indicator in self.indicatorList:
-            signals.append(indicator.signalStrat())
+            signals.append(indicator.TAStrats())
         signalDataFrame = pd.concat(signals, axis=1)
         return signalDataFrame
