@@ -26,37 +26,43 @@ class Executor :
         if self.strat == "TA":
             self.strat = TechnicalAnalysis(self.stock)
     def buy(self):
+        if self.qty is None or self.qty <= 0:
+            print(f"Skip BUY {self.stock}: computed qty={self.qty}")
+            return None
         order_data = MarketOrderRequest(
             symbol=self.stock,
-            qty=self.qty,
+            qty=int(self.qty),
             side=OrderSide.BUY,
             time_in_force=TimeInForce.DAY
         )
-        order = StockClient.submit_order(order_data)
-        return order
+        return StockClient.submit_order(order_data)
+
     def sell(self):
+        if self.qty is None or self.qty <= 0:
+            print(f"Skip SELL {self.stock}: computed qty={self.qty}")
+            return None
         order_data = MarketOrderRequest(
             symbol=self.stock,
-            qty=self.qty,
+            qty=int(self.qty),
             side=OrderSide.SELL,
             time_in_force=TimeInForce.DAY
         )
-        order = StockClient.submit_order(order_data)
-        return order
+        return StockClient.submit_order(order_data)
     def execute(self):
         if self.strat.testindicatorsOrder() == "buy" or self.strat.testindicatorsOrder() == "SBuy":
-            return self.buy()
+            self.buy()
+            return "buy"
         elif self.strat.testindicatorsOrder() == "sell" or self.strat.testindicatorsOrder() == "SSell":
-            return self.sell()
+            self.sell()
+            return "sell"
         else:
-            print("No action taken based on strategy signals.")
             return None
 
 class Stock:
     def __init__(self, name, allocation):
         self.name = name
         self.df = Retriever(name).getLatestData()
-        self.share = allocation / self.df.iloc[-1]['close']
+        self.share = allocation // self.df.iloc[-1]['close']
 
 class Main:
     def __init__(self):
@@ -91,6 +97,13 @@ if __name__ == "__main__":
     main.addStock("NVDA")
     main.addStock("AAPL")
     main.addStock("TSLA")
+    main.addStock("AMZN")
+    main.addStock("GOOGL")
+    main.addStock("META")
+    main.addStock("NVO")
+    main.addStock("AMD")
+    main.addStock("MSFT")
+    main.addStock("LLY")
     while True:
         main.run()
         print("Waiting for next execution cycle...")
