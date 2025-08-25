@@ -17,21 +17,6 @@ class TechnicalAnalysis:
             "sell": -1,
             "hold": 0
         }
-    def testIndicatorsData(self):
-        totalIndicators = self.df.shape[1]
-
-        signalInt = pd.Series(0, index=self.df.index, name="signalInt")
-        signalInt = self.df.apply(
-            lambda row : sum(self.sigTOVal[element] for element in row),
-            axis=1
-        )
-        signal = pd.Series("hold", index=self.df.index, name="signal")
-        score = signalInt / totalIndicators
-        signal[score == 1] = "SBuy"
-        signal[(score > 0.6) & (score < 1)] = "buy"
-        signal[score == -1] = "SSell"
-        signal[(score < -0.6) & (score > -1)] = "sell"
-        return pd.concat([signalInt, signal], axis=1)
     def testindicatorsOrder(self):
         latestRow = self.df.iloc[-1]
         totalIndicators = self.df.shape[1]
@@ -46,5 +31,3 @@ class TechnicalAnalysis:
             return "sell"
         else:
             return "hold"
-    def toCSV(self, dataframe):
-        return dataframe.to_csv(index=False)

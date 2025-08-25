@@ -1,20 +1,12 @@
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.requests import MarketOrderRequest 
-from alpaca.data.historical import StockHistoricalDataClient
-from alpaca.data.timeframe import TimeFrame
 
-from datetime import datetime, timedelta
-import numpy as np
-import pandas as pd
-import pandas_ta as ta
-
-import alpaca.data.requests as DataRequest
-from Retriever import Retriever
 from TechnicalAnalysis import TechnicalAnalysis
 
-API_KEY = ""
-SECRET_KEY = ""
+
+API_KEY = "PKWTJIBVMNMS9I071AP3"
+SECRET_KEY = "yx9PvdxcScs7Kyo7ef5dv7B614QqiP1nmhaTp2Wm"
 StockClient = TradingClient(API_KEY, SECRET_KEY, paper=True)
 
 class Executor :
@@ -23,32 +15,38 @@ class Executor :
         self.qty = qty
         self.strat = strat
         if self.strat == "TA":
-            self.strat = TechnicalAnalysis("NVDA")
+            self.strat = TechnicalAnalysis(self.stock)
     def buy(self):
+        if self.qty is None or self.qty <= 0:
+            print(f"Skip BUY {self.stock}: computed qty={self.qty}")
+            return None
         order_data = MarketOrderRequest(
             symbol=self.stock,
-            qty=self.qty,
+            qty=int(self.qty),
             side=OrderSide.BUY,
             time_in_force=TimeInForce.DAY
         )
-        order = StockClient.submit_order(order_data)
-        return order
+        return StockClient.submit_order(order_data)
+
     def sell(self):
+        if self.qty is None or self.qty <= 0:
+            print(f"Skip SELL {self.stock}: computed qty={self.qty}")
+            return None
         order_data = MarketOrderRequest(
             symbol=self.stock,
-            qty=self.qty,
+            qty=int(self.qty),
             side=OrderSide.SELL,
             time_in_force=TimeInForce.DAY
         )
-        order = StockClient.submit_order(order_data)
-        return order
-    def run(self):
+        return StockClient.submit_order(order_data)
+    def execute(self):
         if self.strat.testindicatorsOrder() == "buy" or self.strat.testindicatorsOrder() == "SBuy":
-            return self.buy()
+            self.buy()
+            return "buy"
         elif self.strat.testindicatorsOrder() == "sell" or self.strat.testindicatorsOrder() == "SSell":
-            return self.sell()
+            self.sell()
+            return "sell"
         else:
-            print("No action taken based on strategy signals.")
             return None
 
         
