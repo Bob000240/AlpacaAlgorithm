@@ -3,15 +3,25 @@ from alpaca.trading.client import TradingClient
 from Retriever import Retriever
 from Executor import Executor
 
-API_KEY = "PKWTJIBVMNMS9I071AP3"
-SECRET_KEY = "yx9PvdxcScs7Kyo7ef5dv7B614QqiP1nmhaTp2Wm"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.getenv("ALPACA_PUBLIC_KEY")
+SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
 StockClient = TradingClient(API_KEY, SECRET_KEY, paper=True)
 
 class Stock:
     def __init__(self, name, allocation):
         self.name = name
         self.df = Retriever(name).getLatestData()
-        self.share = allocation // self.df.iloc[-1]['close']
+        self.buyShare = int(allocation // self.df['close'].iloc[-1]) if allocation > 0 else 0
+        try:
+            position = StockClient.get_open_position(name)
+            self.availableShares = int(position.qty)
+        except Exception:
+            self.availableShares = 0
+        self.sellShare = int(self.availableShares) // 2 if self.availableShares % 2 == 0 else int(self.availableShares) // 2 + 1
 
 class Main:
     def __init__(self):
@@ -32,7 +42,7 @@ class Main:
                 break
     def run(self):
         for stock in self.stocks:
-            executor = Executor(stock.name, stock.share, "TA")
+            executor = Executor(stock.name, stock.buyShare, stock.sellShare, "TA")
             order = executor.execute()
             if order:
                 print(f"Executed order for {stock.name}: {order}")
@@ -53,6 +63,7 @@ if __name__ == "__main__":
     main.addStock("AMD")
     main.addStock("MSFT")
     main.addStock("LLY")
+
     while True:
         main.run()
         print("Waiting for next execution cycle...")

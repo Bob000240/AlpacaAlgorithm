@@ -1,14 +1,17 @@
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.timeframe import TimeFrame
 import alpaca.data.requests as DataRequest
-
 from datetime import datetime, timedelta
 import pandas as pd
 from Indicators.IndicatorFactory import IndicatorFactory
 
 
-API_KEY = "PKWTJIBVMNMS9I071AP3"
-SECRET_KEY = "yx9PvdxcScs7Kyo7ef5dv7B614QqiP1nmhaTp2Wm"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.getenv("ALPACA_PUBLIC_KEY")
+SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
 DataClient = StockHistoricalDataClient(API_KEY, SECRET_KEY)
 
 class Retriever:
@@ -17,7 +20,7 @@ class Retriever:
         self.stockData = pd.DataFrame()
         hData = DataRequest.StockBarsRequest(
             symbol_or_symbols = self.stock,
-            start = datetime.now() - timedelta(days=1),
+            start = datetime.now() - timedelta(days=3),
             end = datetime.now(),
             #limit = 100,
             # currency: SupportedCurrencies | None = None,
@@ -65,20 +68,3 @@ class Retriever:
         return self.stockData.tail(1)
     def toCSV(self, dataframe):
         return dataframe.to_csv(index=False)
-
-"""
-spy = Retriever("NVO")
-spy.addIndicator("BBands(SMA)")
-spy.addIndicator("BBands(EMA)")
-spy.addIndicator("RSI")
-spy.addIndicator("MACD")
-print(spy.getSignalData())
-print(spy.getIndicatorData())
-print(spy.getStockData())
-print(spy.getCombineData())
-
-
-with open("data.csv", "w") as f:
-
-    f.write(spy.toCSV(spy.getCombineData()))
-"""

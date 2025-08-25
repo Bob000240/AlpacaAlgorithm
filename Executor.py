@@ -4,37 +4,43 @@ from alpaca.trading.requests import MarketOrderRequest
 
 from TechnicalAnalysis import TechnicalAnalysis
 
+import os
+from dotenv import load_dotenv
 
-API_KEY = "PKWTJIBVMNMS9I071AP3"
-SECRET_KEY = "yx9PvdxcScs7Kyo7ef5dv7B614QqiP1nmhaTp2Wm"
+load_dotenv()
+API_KEY = os.getenv("ALPACA_PUBLIC_KEY")
+SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
 StockClient = TradingClient(API_KEY, SECRET_KEY, paper=True)
 
 class Executor :
-    def __init__(self, stock, qty, strat):
+    def __init__(self, stock, buyQty, sellQty, strat):
         self.stock = stock
-        self.qty = qty
+        self.buyQty = buyQty
+        self.sellQty = sellQty
         self.strat = strat
         if self.strat == "TA":
             self.strat = TechnicalAnalysis(self.stock)
+        else:
+            raise ValueError(f"Strategy {self.strat} not recognized.")
     def buy(self):
-        if self.qty is None or self.qty <= 0:
-            print(f"Skip BUY {self.stock}: computed qty={self.qty}")
+        if self.buyQty is None or self.buyQty <= 0:
+            print(f"Skip BUY {self.stock}: computed buyQty={self.buyQty}")
             return None
         order_data = MarketOrderRequest(
             symbol=self.stock,
-            qty=int(self.qty),
+            qty=int(self.buyQty),
             side=OrderSide.BUY,
             time_in_force=TimeInForce.DAY
         )
         return StockClient.submit_order(order_data)
 
     def sell(self):
-        if self.qty is None or self.qty <= 0:
-            print(f"Skip SELL {self.stock}: computed qty={self.qty}")
+        if self.sellQty is None or self.sellQty <= 0:
+            print(f"Skip SELL {self.stock}: computed buyQty={self.sellQty}")
             return None
         order_data = MarketOrderRequest(
             symbol=self.stock,
-            qty=int(self.qty),
+            qty=int(self.sellQty),
             side=OrderSide.SELL,
             time_in_force=TimeInForce.DAY
         )
