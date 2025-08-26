@@ -36,7 +36,7 @@ class Executor :
 
     def sell(self):
         if self.sellQty is None or self.sellQty <= 0:
-            print(f"Skip SELL {self.stock}: computed buyQty={self.sellQty}")
+            print(f"Skip SELL {self.stock}: computed sellQty={self.sellQty}")
             return None
         order_data = MarketOrderRequest(
             symbol=self.stock,
