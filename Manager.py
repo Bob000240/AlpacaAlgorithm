@@ -48,6 +48,7 @@ class Main:
                 print(f"Executed order for {stock.name}: {order}")
             else:
                 print(f"No action taken for {stock.name}.")
+            stock = Stock(stock.name, self.indAllocation)
 
 
 
